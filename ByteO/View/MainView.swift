@@ -112,3 +112,7 @@ struct MainMenuView: View {
         }
     }
 }
+#Preview {
+    MainMenuView()
+        .environment(GameDataStore.shared)
+}

@@ -1,5 +1,33 @@
-////import SwiftUI
-//
+
+import SwiftUI
+
+struct WinPopup: View {
+    @Binding var isPresented: Bool
+    var onContinue: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("🎉 تهانينا! إجابة صحيحة!")
+                .font(.title)
+                .bold()
+            
+            Button("استمرار") {
+                isPresented = false
+                onContinue()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
+        .frame(maxWidth: 300)
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .shadow(radius: 10)
+    }
+}
+
+
+
+/// هذا يو اي بس عشان اخذ الديزاين منه
 //struct WinPopUp: View {
 //    @AppStorage("currentLevel") var currentLevel: Int = 0
 //

@@ -47,43 +47,44 @@ struct LevelData {
 
         // 🟦 المسار الأزرق
         LevelTrack(
-            name: "المسار الأزرق",
+            name: "Blue Line",
             color: .blue,
             levels: [
                 StaticLevel(
                     number: 1,
-                    question: "ما هو النص المشفر؟",
-                    encryptedText: "KHOOR",
-                    correctAnswer: "AAAA",
-                    hint: "جرب تزحزح الحروف 3 مرات"
+                    question: "King Abdullah Financial District",
+                    encryptedText: "Roddb and The Key : 3",
+                    correctAnswer: "AAAAA",//Olaya
+                    hint: "Each letter moved back 3 steps in the alphabet.Think of a famous me"
                 ),
                 StaticLevel(
                     number: 2,
-                    question: "حلّ النص التالي:",
-                    encryptedText: "ZRUOG",
-                    correctAnswer: "AAAA",
-                    hint: "نفس التكنيك"
+                    question: "Decode the title of Abdullah Statio",
+                    encryptedText: "Oirm",
+                    correctAnswer: "AAAZ",//King
+                    hint: "ust 4 letters, hiding a royal title 👑 Shift each letter back 5 steps to reveal it! The full station name is: __ Abdullah"
+                    
                 )
             ]
         ),
 
         // 🟥 المسار الأحمر
         LevelTrack(
-            name: "المسار الأحمر",
+            name: "Red Line",
             color: .red,
             levels: [
                 StaticLevel(
                     number: 1,
-                    question: "رسالة مشفّرة من شخص غريب",
-                    encryptedText: "SBWKRQ",
-                    correctAnswer: "AAAA",
-                    hint: "سيزر +3"
+                    question: "Find the university station!",
+                    encryptedText: "GOQ",
+                    correctAnswer: "AAAAA",//KSU
+                    hint: "It’s a 3-letter abbreviation for a top Riyadh university 🎓 Shift each letter back 4 steps to decode it!"
                 ),
                 StaticLevel(
                     number: 2,
                     question: "افكّر في التشفير",
                     encryptedText: "FDHVDU",
-                    correctAnswer: "AAAA",
+                    correctAnswer: "AAAAA",
                     hint: "هذا هو نوع التشفير!"
                 )
             ]

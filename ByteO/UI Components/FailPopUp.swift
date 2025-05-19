@@ -2,10 +2,56 @@
 ////  ByteO
 ////  Created by Shatha Almukhaild on 18/11/1446 AH.
 //
-//import SwiftUI
-//import SwiftData
+
+import SwiftUI
+import SwiftData
+
+struct FailPopup: View {
+    @Binding var isPresented: Bool
+    var attemptsRemaining: Int
+    var onRetry: () -> Void
+    var onWait: () -> Void
+    var onBuyCoins: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("❌ للأسف، إجابة خاطئة!")
+                .font(.title)
+                .bold()
+            
+            if attemptsRemaining > 0 {
+                Text("لديك \(attemptsRemaining) محاولات متبقية")
+                Button("حاول مرة ثانية") {
+                    isPresented = false
+                    onRetry()
+                }
+                .buttonStyle(.borderedProminent)
+            } else {
+                Text("انتهت محاولاتك")
+                
+                Button("انتظر 24 ساعة") {
+                    isPresented = false
+                    onWait()
+                }
+                .buttonStyle(.bordered)
+                
+                Button("اشترِ 50 كوينز") {
+                    isPresented = false
+                    onBuyCoins()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+        .frame(maxWidth: 300)
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .shadow(radius: 10)
+    }
+}
+
 //
-//
+//هذا كود يو اي بس 
 //struct FailPopUp: View {
 //
 //
