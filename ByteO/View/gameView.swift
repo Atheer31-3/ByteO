@@ -65,6 +65,7 @@ struct GameView: View {
     @State private var showWinPopup = false
     @State private var showFailPopup = false
     @State private var showStoreSheet = false
+    
     var body: some View {
         let progress = gameData.playerProgress
         let tracks = LevelData.allTracks
@@ -81,6 +82,9 @@ struct GameView: View {
 
         let attemptsUsed = progress?.failedAttempts[levelKey] ?? 0
         let remaining = max(3 - attemptsUsed, 0)
+       
+        
+        
         
         ZStack {
             NavigationLink("", destination: MainMenuView(), isActive: $navigateToMainMenu).hidden()
@@ -126,7 +130,7 @@ struct GameView: View {
                     HStack {
                         Image(systemName: "pawprint.fill")
                             .foregroundColor(.white)
-                        Text(" \(remaining)x").foregroundColor(.white).font(.headline)
+                        Text(" \(remaining)x ").foregroundColor(.white).font(.headline)
                     }
                     .padding(8)
                     .background(Color.white.opacity(0.4))
@@ -137,159 +141,183 @@ struct GameView: View {
                 }
             }
             .padding(.leading, -410)
-            .padding(.bottom, 190)
-
-            HStack(alignment: .top, spacing: -15) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(.ultraThinMaterial)
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.c2.opacity(0.8), lineWidth: 1.8))
-                        .shadow(color: .c2.opacity(0.5), radius: 8, x: 0, y: 5)
-
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("\(track.name) \(level.number)")
-                            .font(.system(size: 18, weight: .bold, design: .monospaced))
-                            .foregroundColor(track.color)
-                        Text("Encrypted messages : \(level.encryptedText)")
-                            .font(.system(size: 16, design: .monospaced))
-                            .foregroundColor(.white.opacity(0.9))
-                    }
-                    .padding()
-                    .offset(x: animationOffset)
-                    .onAppear {
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.7, blendDuration: 0.5)) {
-                            animationOffset = 0
+            .padding(.bottom, 200)
+            
+            VStack{
+                HStack(alignment: .top, spacing: -15) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(.ultraThinMaterial)
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.c2.opacity(0.8), lineWidth: 1.8))
+                            .shadow(color: .c2.opacity(0.5), radius: 8, x: 0, y: 5)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("\(track.name) - Level \(level.number)")
+                                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                .foregroundColor(track.color)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(level.question)")
+                                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                .foregroundColor(.white.opacity(0.9))
+                                .multilineTextAlignment(.leading) // النص يبدأ من اليسار
+                                .lineLimit(nil) // عدد غير محدود من الأسطر
+                                .fixedSize(horizontal: false, vertical: true) // التفاف تلقائي
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Encrypted messages: \(level.encryptedText)")
+                                .font(.system(size: 16, design: .monospaced))
+                                .foregroundColor(.white.opacity(0.9))
+                                .multilineTextAlignment(.leading) // النص يبدأ من اليسار
+                                .lineLimit(nil) // عدد غير محدود من الأسطر
+                                .fixedSize(horizontal: false, vertical: true) // التفاف تلقائي
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    }
-                    .frame(width: 500, height: 100)
-
-                    Button(action: {
-                        if !usedHint && !(progress?.hintsUsed.contains(levelKey) ?? false) {
-                            usedHint = gameData.useHint(for: levelKey)
-                            showHint = true
-                        } else {
-                            showAdPrompt = true
+                        .padding(.bottom, 20)
+                        .padding()
+                        .offset(x: animationOffset)
+                        .onAppear {
+                            withAnimation(.spring(response: 0.6, dampingFraction: 0.7, blendDuration: 0.5)) {
+                                animationOffset = 0
+                            }
                         }
-                    }) {
-                        ZStack {
-                            Circle().fill(Color.c2.opacity(0.99)).frame(width: 50, height: 50)
-                            Image(systemName: "lightbulb.fill")
-                                .font(.title)
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.white)
+                        .frame(width: 500, height: 100)
+                        
+                        Button(action: {
+                            if !usedHint && !(progress?.hintsUsed.contains(levelKey) ?? false) {
+                                usedHint = gameData.useHint(for: levelKey)
+                                showHint = true
+                            } else {
+                                showAdPrompt = true
+                            }
+                        }) {
+                            ZStack {
+                                Circle().fill(Color.c2.opacity(0.99)).frame(width: 50, height: 50)
+                                Image(systemName: "lightbulb.fill")
+                                    .font(.title)
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(.white)
+                            }
                         }
+                        .alert("Alert", isPresented: $showAdPrompt) {
+                            Button("OK") {}
+                        } message: {
+                            Text("To unlock another hint, you need to watch an Ad")
+                        }
+                        .padding(.leading, -320)
+                        .padding(.bottom, 70)
+                        .transition(.move(edge: .bottom))
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: showHintPopup)
                     }
-                    .alert("Alert", isPresented: $showAdPrompt) {
-                        Button("OK") {}
-                    } message: {
-                        Text("To unlock another hint, you need to watch an Ad")
-                    }
-                    .padding(.leading, -320)
-                    .padding(.bottom, 50)
-                    .transition(.move(edge: .bottom))
-                    .animation(.spring(response: 0.5, dampingFraction: 0.7), value: showHintPopup)
+                    
+                    .frame(width: 450, height: 130)
+                    
+                    Image("robot_zero")
+                        .resizable()
+                        .frame(width: 160, height: 160)
+                        .alignmentGuide(.top) { _ in 0 }
+                        .offset(x: animationOffset, y: -30)
+                        .transition(.scale)
+                        .onAppear {
+                            withAnimation(.spring(response: 0.6, dampingFraction: 0.7, blendDuration: 0.5)) {
+                                animationOffset = 0
+                            }
+                        }
                 }
-
-                .frame(width: 450, height: 130)
-
-                Image("robot_zero")
-                    .resizable()
-                    .frame(width: 160, height: 160)
-                    .alignmentGuide(.top) { _ in 0 }
-                    .offset(x: animationOffset, y: -30)
-                    .transition(.scale)
-                    .onAppear {
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.7, blendDuration: 0.5)) {
-                            animationOffset = 0
+                .padding(.trailing, -250)
+                .padding(.top, 50)
+                
+                VStack(spacing: -10) {
+                    Text(slots.joined())
+                        .font(.system(size: 20, weight: .medium, design: .rounded))
+                        .foregroundColor(.white.opacity(0.8))
+                        .padding()
+                        .frame(maxWidth: 250)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(12)
+                    
+                    HStack(alignment: .top, spacing: 10) {
+                        ForEach(slots.indices, id: \.self) { index in
+                            InfiniteLetterPicker(selectedLetter: $slots[index])
                         }
                     }
-            }
-            .padding(.trailing, -250)
-            .padding(.bottom, 180)
-
-            VStack(spacing: -15) {
-                Text(slots.joined())
-                    .font(.system(size: 20, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.8))
-                    .padding()
-                    .frame(maxWidth: 250)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-
-                HStack(alignment: .top, spacing: 5) {
-                    ForEach(slots.indices, id: \.self) { index in
-                        InfiniteLetterPicker(selectedLetter: $slots[index])
-                    }
-                }
-
-                Button("Submit") {
-                    let result = slots.joined().trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-                    let correctAnswer = level.correctAnswer.uppercased()
-
-                    if remaining > 0 {
-                        if result == correctAnswer {
-                            isCorrect = true
-                            showWinPopup = true
-                            gameData.markLevelCompleted(levelKey)
-                            gameData.addCoins(10)
+                    
+                    Button("Submit") {
+                        let result = slots.joined().trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+                        let correctAnswer = level.correctAnswer.uppercased()
+                        
+                        if remaining > 0 {
+                            if result == correctAnswer {
+                                isCorrect = true
+                                showWinPopup = true
+                                gameData.markLevelCompleted(levelKey)
+                                gameData.addCoins(10)
+                            } else {
+                                isCorrect = false
+                                showFailPopup = true
+                                gameData.registerFailedAttempt(for: levelKey)
+                            }
                         } else {
-                            isCorrect = false
                             showFailPopup = true
-                            gameData.registerFailedAttempt(for: levelKey)
                         }
-                    } else {
-                        showFailPopup = true
                     }
+                    .padding()
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white.opacity(0.2))
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.c4.opacity(0.4)))
+                            .shadow(color: Color.c4, radius: 10, x: 8, y: 8)
+                    )
+                    .padding(.leading, 600)
+                    .padding(.bottom, 40)
+                   
                 }
-                .padding()
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.white)
-                .padding(.horizontal, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white.opacity(0.2))
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.c4.opacity(0.4)))
-                    .shadow(color: Color.c4, radius: 10, x: 8, y: 8)
-                )
-                .padding(.leading, 500)
             }
-
+            
             // Show Win Popup
             if showWinPopup {
-                WinPopup(isPresented: $showWinPopup) {
-                    let totalLevels = track.levels.count
-                    let totalTracks = tracks.count
+                WinPopup(
+                    isPresented: $showWinPopup,
+                    attemptsUsed: attemptsUsed,
+                    onContinue: {
+                        let totalLevels = track.levels.count
+                        let totalTracks = tracks.count
 
-                    if trackIndex < totalTracks {
-                        if levelIndex + 1 < totalLevels {
-                            gameData.playerProgress?.currentLevelIndex = levelIndex + 1
-                        } else if trackIndex + 1 < totalTracks {
-                            gameData.playerProgress?.currentTrackIndex = trackIndex + 1
-                            gameData.playerProgress?.currentLevelIndex = 0
-                        } else {
-                            // no more levels
+                        if trackIndex < totalTracks {
+                            if levelIndex + 1 < totalLevels {
+                                gameData.playerProgress?.currentLevelIndex = levelIndex + 1
+                            } else if trackIndex + 1 < totalTracks {
+                                gameData.playerProgress?.currentTrackIndex = trackIndex + 1
+                                gameData.playerProgress?.currentLevelIndex = 0
+                            }
                         }
-                    }
 
-                    gameData.save()
-                    navigateToMap = true
-                }
+                        gameData.save()
+                        navigateToMap = true
+                    },
+                    onMainMenu: {
+                        navigateToMainMenu = true
+                    }
+                )
             }
 
             // Show Fail Popup
             if showFailPopup {
                 FailPopup(
                     isPresented: $showFailPopup,
-                    attemptsRemaining: remaining,
-                    onRetry: {
-                        showFailPopup = false
-                    },
-                    onWait: {
-                        showFailPopup = false
-                    },
-                    onBuyCoins: {
-                        showFailPopup = false
-                        showStoreSheet = true  // افتح شاشة المتجر
+                       attemptsRemaining: remaining,
+                       onRetry: {
+                           showFailPopup = false
+                       },
+                       onWait: {
+                           showFailPopup = false
+                       },
+                       onBuyCoins: {
+                           showFailPopup = false
+                           showStoreSheet = true
+                    
+                 // افتح شاشة المتجر
                         if gameData.useCoins(50) {
                             let current = gameData.playerProgress?.failedAttempts[levelKey] ?? 0
                             if current > 0 {
@@ -299,6 +327,9 @@ struct GameView: View {
                             }
                             gameData.save()
                         }
+                    },
+                    navigateToMainMenu: {
+                           navigateToMainMenu = true
                     }
                 )
             }

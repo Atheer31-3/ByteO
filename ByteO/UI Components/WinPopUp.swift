@@ -1,29 +1,85 @@
 
 import SwiftUI
-
 struct WinPopup: View {
     @Binding var isPresented: Bool
+    var attemptsUsed: Int
     var onContinue: () -> Void
-    
+    var onMainMenu: () -> Void
+
+    var filledStars: Int {
+        switch attemptsUsed {
+        case 0: return 3
+        case 1: return 2
+        case 2: return 1
+        default: return 0
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 20) {
-            Text("🎉 تهانينا! إجابة صحيحة!")
-                .font(.title)
-                .bold()
-            
-            Button("استمرار") {
-                isPresented = false
-                onContinue()
+        VStack(spacing: 12) {
+            // النجوم حسب المحاولات
+            HStack(spacing: 10) {
+                ForEach(0..<3, id: \.self) { i in
+                    Image(systemName: i < filledStars ? "star.fill" : "star")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 30))
+                        .shadow(radius: 1)
+                }
             }
-            .buttonStyle(.borderedProminent)
+
+            // القطة و البانر
+            ZStack {
+                Image("cat_avatar")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 150, height: 150)
+                    .offset(y: -20)
+
+                Image("YellowBanner")
+                    .resizable()
+                    .frame(width: 180, height: 40)
+                    .offset(y: 50)
+
+                Text("Congratulations")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .offset(y: 45)
+            }
+
+            // الأزرار
+            HStack(spacing: 30) {
+                Button(action: {
+                    isPresented = false
+                    onMainMenu()
+                }) {
+                    Image(systemName: "arrowshape.turn.up.left.fill")
+                        .font(.system(size: 22))
+                        .frame(width: 50, height: 50)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                }
+
+                Button(action: {
+                    isPresented = false
+                    onContinue()
+                }) {
+                    Image(systemName: "chevron.forward.2")
+                        .font(.system(size: 22))
+                        .frame(width: 50, height: 50)
+                        .background(Color.black.opacity(0.4))
+                        .cornerRadius(12)
+                }
+            }
+            .padding(.top, 10)
         }
         .padding()
-        .frame(maxWidth: 300)
+        .frame(width: 350, height: 340)
         .background(.ultraThinMaterial)
-        .cornerRadius(20)
+        .cornerRadius(25)
         .shadow(radius: 10)
     }
 }
+
 
 
 

@@ -5,6 +5,8 @@
 
 import SwiftUI
 import SwiftData
+// ✅ FailPopup الجديد بشكل القط مع النجوم والمتجر
+
 
 struct FailPopup: View {
     @Binding var isPresented: Bool
@@ -12,41 +14,104 @@ struct FailPopup: View {
     var onRetry: () -> Void
     var onWait: () -> Void
     var onBuyCoins: () -> Void
-    
+    var navigateToMainMenu: () -> Void
+
     var body: some View {
-        VStack(spacing: 20) {
-            Text("❌ للأسف، إجابة خاطئة!")
-                .font(.title)
-                .bold()
-            
-            if attemptsRemaining > 0 {
-                Text("لديك \(attemptsRemaining) محاولات متبقية")
-                Button("حاول مرة ثانية") {
-                    isPresented = false
-                    onRetry()
+        if isPresented {
+            ZStack {
+                Color.black.opacity(0.3)
+                    .edgesIgnoringSafeArea(.all)
+
+              VStack(spacing: 20) {
+                    // ⭐ النجوم المرتبطة بعدد المحاولات
+                    HStack(spacing: 15) {
+                        ForEach(0..<3, id: \.self) { i in
+                            Image(systemName: i < attemptsRemaining ? "star.fill" : "star")
+                                .resizable()
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(i < attemptsRemaining ? .yellow : .gray)
+                                .shadow(radius: i < attemptsRemaining ? 4 : 0)
+                        }
+                    }
+                    .padding(.bottom, 5)
+
+                    // 🐱 صورة القطة والبنر
+                    ZStack {
+                        Image("cat_avatar")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 140, height: 140)
+
+                        Image("YellowBanner")
+                            .resizable()
+                            .frame(width: 160, height: 38)
+                            .offset(y: 60)
+
+                        Text("FAILED !")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .offset(y: 55)
+                    } .offset(y: 30)
+
+                    // 🐾 المحاولات
+                    HStack(spacing: 10) {
+                        ForEach(0..<3, id: \.self) { i in
+                            Image(systemName: i < attemptsRemaining ? "pawprint.fill" : "pawprint")
+                                .resizable()
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(i < attemptsRemaining ? .white : .gray)
+                        }
+                    }.offset(y: 28)
+
+                    // 📦 أزرار الخيارات
+                    HStack(spacing: 20) {
+                        Button(action: navigateToMainMenu) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 20))
+                                .frame(width: 60, height: 50)
+                                .background(Color.black.opacity(0.4))
+                                .cornerRadius(10)
+                        }
+
+                        Button(action: {
+                            if attemptsRemaining > 0 {
+                                isPresented = false
+                                onRetry()
+                            } else {
+                                onBuyCoins()
+                            }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 22))
+                                .frame(width: 60, height: 50)
+                                .background(Color.black.opacity(0.4))
+                                .cornerRadius(10)
+                        }
+                    }
+                    .padding(.top, 10)
                 }
-                .buttonStyle(.borderedProminent)
-            } else {
-                Text("انتهت محاولاتك")
-                
-                Button("انتظر 24 ساعة") {
-                    isPresented = false
-                    onWait()
-                }
-                .buttonStyle(.bordered)
-                
-                Button("اشترِ 50 كوينز") {
-                    isPresented = false
-                    onBuyCoins()
-                }
-                .buttonStyle(.borderedProminent)
+                .padding()
+                .frame(width: 350, height: 350)
+                //.background(.ultraThinMaterial)
+//                .cornerRadius(25)
+//                .shadow(radius: 10)
+//                .padding()
+//                .frame(width: 320, height: 400)
+//                .background(.ultraThinMaterial)
+//                .cornerRadius(25)
+//                .shadow(radius: 10)
+                .background(
+                    ZStack{
+                        Color.black.opacity(0.5)
+                            .cornerRadius(20)
+                            //.background(.ultraThinMaterial)
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.white.opacity(0.3),lineWidth: 0.3)
+                            .shadow(color: Color.blue.opacity(0.3), radius: 50, x: 10, y: 10)
+                    }
+                    )
             }
         }
-        .padding()
-        .frame(maxWidth: 300)
-        .background(.ultraThinMaterial)
-        .cornerRadius(20)
-        .shadow(radius: 10)
     }
 }
 
